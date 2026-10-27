@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4d2155">
+    <title>Tokyo Drift & Doles: Japan Expense & Split Tracker</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #4d2155 0%, #ec7953 100%);
+            --card-bg: rgba(30, 30, 40, 0.85);
+            --card-border: rgba(255, 121, 161, 0.25);
+            --text-main: #f0f0f5;
+            --text-muted: #b0b0c0;
+            --accent-pink: #ff79a1;
+            --accent-red: #e83936;
+            --input-bg: rgba(20, 20, 28, 0.9);
+            --input-border: rgba(255, 255, 255, 0.15);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --header-gradient: linear-gradient(135deg, #4d2155 0%, #ec7953 100%);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #e43836 100%);
+            --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 240, 0.95));
+            --card-border: rgba(232, 57, 54, 0.3);
+            --text-main: #1a1a24;
+            --text-muted: #555566;
+            --accent-pink: #d81b60;
+            --accent-red: #c62828;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-border: rgba(232, 57, 54, 0.3);
+            --shadow: 0 8px 32px rgba(228, 56, 54, 0.15);
+            --header-gradient: linear-gradient(135deg, #e83936 0%, #fdfdfd 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 60px;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--header-gradient);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            transition: background 0.4s ease;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .theme-toggle {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fx-status {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-pink);
+        }
+
+        .currency-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .currency-row input {
+            flex: 1;
+        }
+
+        .currency-row select {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .checkbox-label input {
+            accent-color: var(--accent-pink);
+            width: 16px;
+            height: 16px;
+        }
+
+        button.btn-primary {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-pink));
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(232, 57, 54, 0.3);
+            margin-top: 6px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button.btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .expense-item {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .expense-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .expense-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .expense-cost {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--accent-pink);
+            text-align: right;
+        }
+
+        .expense-subcost {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px;
+            margin-left: 8px;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: #ff4757;
+        }
+
+        .split-ticks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--input-border);
+        }
+
+        .split-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--input-border);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+        }
+
+        .split-badge.active {
+            border-color: var(--accent-pink);
+            color: var(--text-main);
+        }
+
+        .split-badge input {
+            accent-color: var(--accent-pink);
+            width: 13px;
+            height: 13px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .summary-box {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .summary-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .summary-amount {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 4px;
+        }
+
+        .sync-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #2ed573;
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 8px #2ed573;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>Tokyo Drift & Doles</h1>
+                    <div class="subtitle"><span class="sync-indicator"></span>Japan Expense & Split Tracker</div>
+                </div>
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+            </div>
+        </header>
+
+        <!-- OVERVIEW SUMMARY (MOVED TO TOP) -->
+        <div class="card">
+            <h2>Overview Split <span class="fx-status" id="fxRateDisplay">Loading live FX...</span></h2>
+            <div class="summary-grid" id="summaryGrid">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+
+        <!-- ADD EXPENSE FORM -->
+        <div class="card">
+            <h2>Add Shared Japan Expense</h2>
+            <form id="expenseForm" onsubmit="addExpense(event)">
+                <div class="form-group">
+                    <label>Item Name / Description</label>
+                    <input type="text" id="itemTitle" placeholder="e.g. Ichiran Ramen, Shinkansen Ticket" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Cost & Currency</label>
+                    <div class="currency-row">
+                        <input type="number" id="itemCost" step="any" placeholder="0.00" required>
+                        <select id="itemCurrency">
+                            <option value="AUD">AUD ($)</option>
+                            <option value="JPY">JPY (¥)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Purchaser</label>
+                    <select id="itemPurchaser">
+                        <option value="Noyal">Noyal</option>
+                        <option value="Georgy">Georgy</option>
+                        <option value="Gowtham">Gowtham</option>
+                        <option value="Jackson">Jackson</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Split Among Participants</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Noyal" checked> Noyal</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Georgy" checked> Georgy</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Gowtham" checked> Gowtham</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Jackson" checked> Jackson</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Add Expense Row</button>
+            </form>
+        </div>
+
+        <!-- ITEMS LIST -->
+        <div class="card">
+            <h2>Items & Paid Status</h2>
+            <div class="item-list" id="itemList">
+                <div class="empty-state">No expenses added yet. Add one above!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MEMBERS = ['Georgy', 'Gowtham', 'Jackson', 'Noyal'];
+        let expenses = JSON.parse(localStorage.getItem('japan_expenses_v2')) || [];
+        let exchangeRate = 98.5; // Fallback rate
+
+        async function fetchLiveFX() {
+            try {
+                const res = await fetch('https://api.exchangerate-api.com/v4/latest/AUD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.JPY) {
+                    exchangeRate = data.rates.JPY;
+                    document.getElementById('fxRateDisplay').innerText = `1 AUD = ${exchangeRate.toFixed(1)} JPY`;
+                    renderSummary();
+                }
+            } catch (e) {
+                document.getElementById('fxRateDisplay').innerText = `1 AUD ≈ 98.5 JPY (Cached)`;
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('japan_theme', next);
+            document.getElementById('themeToggleBtn').innerText = next === 'light' ? '🌙' : '☀️';
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'light' ? '#e83936' : '#4d2155');
+        }
+
+        // Initialize Theme & FX
+        const savedTheme = localStorage.getItem('japan_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeToggleBtn').innerText = savedTheme === 'light' ? '🌙' : '☀️';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', savedTheme === 'light' ? '#e83936' : '#4d2155');
+        fetchLiveFX();
+
+        function addExpense(e) {
+            e.preventDefault();
+            const title = document.getElementById('itemTitle').value.trim();
+            const rawCost = parseFloat(document.getElementById('itemCost').value);
+            const currency = document.getElementById('itemCurrency').value;
+            const purchaser = document.getElementById('itemPurchaser').value;
+
+            const checkedMembers = Array.from(document.querySelectorAll('input[name="splitMember"]:checked')).map(el => el.value);
+            if (checkedMembers.length === 0) {
+                alert('Please select at least one participant to split the expense.');
+                return;
+            }
+
+            // Convert to AUD and JPY for storage
+            let costAUD = rawCost;
+            let costJPY = rawCost * exchangeRate;
+            if (currency === 'JPY') {
+                costJPY = rawCost;
+                costAUD = rawCost / exchangeRate;
+            }
+
+            const paidStatus = {};
+            MEMBERS.forEach(m => {
+                paidStatus[m] = (m === purchaser); // Purchaser is default checked paid
+            });
+
+            const newExpense = {
+                id: Date.now(),
+                title,
+                costAUD,
+                costJPY,
+                purchaser,
+                splitAmong: checkedMembers,
+                paid: paidStatus
+            };
+
+            expenses.push(newExpense);
+            saveAndRender();
+            document.getElementById('expenseForm').reset();
+            document.querySelectorAll('input[name="splitMember"]').forEach(el => el.checked = true);
+        }
+
+        function togglePaid(expenseId, member) {
+            const exp = expenses.find(e => e.id === expenseId);
+            if (exp) {
+                exp.paid[member] = !exp.paid[member];
+                saveAndRender();
+            }
+        }
+
+        function deleteExpense(expenseId) {
+            expenses = expenses.filter(e => e.id !== expenseId);
+            saveAndRender();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('japan_expenses_v2', JSON.stringify(expenses));
+            renderItems();
+            renderSummary();
+        }
+
+        function renderItems() {
+            const listEl = document.getElementById('itemList');
+            if (expenses.length === 0) {
+                listEl.innerHTML = `<div class="empty-state">No expenses added yet. Add one above!</div>`;
+                return;
+            }
+
+            listEl.innerHTML = expenses.map(exp => {
+                const perPersonAUD = exp.costAUD / exp.splitAmong.length;
+                const perPersonJPY = exp.costJPY / exp.splitAmong.length;
+
+                return `
+                    <div class="expense-item">
+                        <div class="expense-header">
+                            <div>
+                                <div class="expense-title">${escapeHtml(exp.title)}</div>
+                                <div class="expense-meta">Paid by <strong>${exp.purchaser}</strong></div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 6px;">
+                                <div>
+                                    <div class="expense-cost">$${exp.costAUD.toFixed(2)} AUD</div>
+                                    <div class="expense-subcost">¥${Math.round(exp.costJPY).toLocaleString()} JPY</div>
+                                </div>
+                                <button class="delete-btn" onclick="deleteExpense(${exp.id})" title="Delete Item">✕</button>
+                            </div>
+                        </div>
+                        <div class="split-ticks">
+                            ${MEMBERS.map(m => {
+                                const isIncluded = exp.splitAmong.includes(m);
+                                if (!isIncluded) return '';
+                                const isPaid = exp.paid[m];
+                                return `
+                                    <label class="split-badge ${isPaid ? 'active' : ''}">
+                                        <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid(${exp.id}, '${m}')">
+                                        ${m}: $${perPersonAUD.toFixed(2)} (${isPaid ? 'Paid' : 'Unpaid'})
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSummary() {
+            const summaryGrid = document.getElementById('summaryGrid');
+            const totals = {};
+            MEMBERS.forEach(m => totals[m] = 0);
+
+            expenses.forEach(exp => {
+                const share = exp.costAUD / exp.splitAmong.length;
+                exp.splitAmong.forEach(m => {
+                    totals[m] += share;
+                });
+            });
+
+            summaryGrid.innerHTML = MEMBERS.map(m => `
+                <div class="summary-box">
+                    <div class="summary-name">${m}'s Split Share</div>
+                    <div class="summary-amount">$${totals[m].toFixed(2)} AUD</div>
+                    <div class="expense-subcost" style="margin-top:2px;">¥${Math.round(totals[m] * exchangeRate).toLocaleString()} JPY</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Initial Load Render
+        renderItems();
+        renderSummary();
+
+        // Cross-tab and device storage synchronization listener
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'japan_expenses_v2') {
+                expenses = JSON.parse(e.newValue) || [];
+                renderItems();
+                renderSummary();
+            }
+        });
+    </script>
+</body>
+</html>
