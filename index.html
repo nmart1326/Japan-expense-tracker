@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#462669">
+    <title>TabiSplit: Japan Expense & Split Tracker</title>
+    <!-- Google Fonts: Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #462669 0%, #d91847 100%);
+            --card-bg: rgba(30, 18, 45, 0.85);
+            --card-border: rgba(255, 218, 114, 0.25);
+            --text-main: #fcf8ee;
+            --text-muted: #d4c5b9;
+            --accent-gold: #ffda72;
+            --accent-red: #d91847;
+            --accent-purple: #462669;
+            --input-bg: rgba(18, 10, 28, 0.9);
+            --input-border: rgba(255, 218, 114, 0.2);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+            --banner-gradient: linear-gradient(135deg, #d91847 0%, #462669 100%);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #e43836 100%);
+            --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 240, 0.95));
+            --card-border: rgba(232, 57, 54, 0.3);
+            --text-main: #1a1a24;
+            --text-muted: #555566;
+            --accent-gold: #d81b60;
+            --accent-red: #c62828;
+            --accent-purple: #e83936;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-border: rgba(232, 57, 54, 0.3);
+            --shadow: 0 10px 30px rgba(228, 56, 54, 0.15);
+            --banner-gradient: linear-gradient(135deg, #e83936 0%, #fdfdfd 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 70px;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* Modern Title Banner */
+        .title-banner {
+            background: var(--banner-gradient);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.4s ease;
+        }
+
+        .banner-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-title span {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        /* Glassmorphic Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fx-status {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--accent-gold);
+            background: rgba(255, 218, 114, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(255, 218, 114, 0.15);
+        }
+
+        .currency-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .currency-row input {
+            flex: 1;
+        }
+
+        .currency-row select {
+            width: 105px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--input-border);
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .checkbox-label input {
+            accent-color: var(--accent-gold);
+            width: 16px;
+            height: 16px;
+        }
+
+        button.btn-primary {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-red), #ff5277);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(217, 24, 71, 0.35);
+            margin-top: 6px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button.btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .expense-item {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 14px;
+            padding: 14px;
+            position: relative;
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .expense-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .expense-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .expense-cost {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--accent-gold);
+            text-align: right;
+        }
+
+        .expense-subcost {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px;
+            margin-left: 8px;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: #ff4757;
+        }
+
+        .split-ticks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--input-border);
+        }
+
+        .split-badge {
+            font-size: 0.7rem;
+            padding: 5px 9px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--input-border);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-muted);
+        }
+
+        .split-badge.active {
+            border-color: var(--accent-gold);
+            color: var(--text-main);
+            background: rgba(255, 218, 114, 0.06);
+        }
+
+        .split-badge input {
+            accent-color: var(--accent-gold);
+            width: 14px;
+            height: 14px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .summary-box {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .summary-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .summary-amount {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--accent-gold);
+            margin-top: 4px;
+        }
+
+        .sync-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #2ed573;
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 8px #2ed573;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 24px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- TITLE BANNER -->
+        <div class="title-banner">
+            <div class="banner-content">
+                <div>
+                    <div class="brand-title">TabiSplit <span>旅</span></div>
+                    <div class="subtitle"><span class="sync-indicator"></span>Live Cloud Synced Tracker</div>
+                </div>
+                <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+            </div>
+        </div>
+
+        <!-- OVERVIEW SUMMARY (TOP) -->
+        <div class="card">
+            <h2>Overview Split <span class="fx-status" id="fxRateDisplay">Loading live FX...</span></h2>
+            <div class="summary-grid" id="summaryGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- ADD EXPENSE FORM -->
+        <div class="card">
+            <h2>Add Shared Expense</h2>
+            <form id="expenseForm" onsubmit="addExpense(event)">
+                <div class="form-group">
+                    <label>Item Name / Description</label>
+                    <input type="text" id="itemTitle" placeholder="e.g. Ichiran Ramen, Shinkansen Ticket" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Cost & Currency</label>
+                    <div class="currency-row">
+                        <input type="number" id="itemCost" step="any" placeholder="0.00" required>
+                        <select id="itemCurrency">
+                            <option value="AUD">AUD ($)</option>
+                            <option value="JPY">JPY (¥)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Purchaser</label>
+                    <select id="itemPurchaser">
+                        <option value="Noyal">Noyal</option>
+                        <option value="Georgy">Georgy</option>
+                        <option value="Gowtham">Gowtham</option>
+                        <option value="Jackson">Jackson</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Split Among Participants</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Noyal" checked> Noyal</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Georgy" checked> Georgy</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Gowtham" checked> Gowtham</label>
+                        <label class="checkbox-label"><input type="checkbox" name="splitMember" value="Jackson" checked> Jackson</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Add Expense Row</button>
+            </form>
+        </div>
+
+        <!-- ITEMS LIST -->
+        <div class="card">
+            <h2>Items & Paid Status</h2>
+            <div class="item-list" id="itemList">
+                <div class="empty-state">Connecting to cloud sync...</div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            by noyal • 生きがい
+        </footer>
+    </div>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const MEMBERS = ['Georgy', 'Gowtham', 'Jackson', 'Noyal'];
+        let expenses = [];
+        let exchangeRate = 98.5; // Fallback FX rate
+
+        // Initialize Firebase Global Environment variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tabisplit-japan-trip';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKeyForStandaloneGitHubHosting",
+            authDomain: "tabisplit.firebaseapp.com",
+            projectId: "tabisplit",
+            storageBucket: "tabisplit.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase init note:", e);
+        }
+
+        async function initAuthAndData() {
+            try {
+                if (auth) {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
+            } catch (err) {
+                console.warn("Auth note:", err);
+            }
+            
+            // Start listening to live Firestore collection
+            startRealtimeListener();
+        }
+
+        function startRealtimeListener() {
+            if (!db) {
+                // Fallback to localStorage if offline
+                expenses = JSON.parse(localStorage.getItem('tabisplit_expenses_v2')) || [];
+                renderItems();
+                renderSummary();
+                return;
+            }
+
+            const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'expenses');
+            
+            onSnapshot(collectionPath, (snapshot) => {
+                expenses = [];
+                snapshot.forEach((docSnap) => {
+                    expenses.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+                // Sort by timestamp descending
+                expenses.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                renderItems();
+                renderSummary();
+            }, (error) => {
+                console.error("Sync error:", error);
+                document.getElementById('itemList').innerHTML = `<div class="empty-state">Offline mode or sync connecting...</div>`;
+            });
+        }
+
+        async function fetchLiveFX() {
+            try {
+                const res = await fetch('https://api.exchangerate-api.com/v4/latest/AUD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.JPY) {
+                    exchangeRate = data.rates.JPY;
+                    document.getElementById('fxRateDisplay').innerText = `1 AUD = ${exchangeRate.toFixed(1)} JPY`;
+                    renderSummary();
+                }
+            } catch (e) {
+                document.getElementById('fxRateDisplay').innerText = `1 AUD ≈ 98.5 JPY (Cached)`;
+            }
+        }
+
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('tabisplit_theme', next);
+            document.getElementById('themeToggleBtn').innerText = next === 'light' ? '🌙' : '☀️';
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'light' ? '#e83936' : '#462669');
+        }
+
+        // Initialize Theme & FX
+        const savedTheme = localStorage.getItem('tabisplit_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeToggleBtn').innerText = savedTheme === 'light' ? '🌙' : '☀️';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', savedTheme === 'light' ? '#e83936' : '#462669');
+        fetchLiveFX();
+        initAuthAndData();
+
+        window.addExpense = async function(e) {
+            e.preventDefault();
+            const title = document.getElementById('itemTitle').value.trim();
+            const rawCost = parseFloat(document.getElementById('itemCost').value);
+            const currency = document.getElementById('itemCurrency').value;
+            const purchaser = document.getElementById('itemPurchaser').value;
+
+            const checkedMembers = Array.from(document.querySelectorAll('input[name="splitMember"]:checked')).map(el => el.value);
+            if (checkedMembers.length === 0) {
+                alert('Please select at least one participant to split the expense.');
+                return;
+            }
+
+            let costAUD = rawCost;
+            let costJPY = rawCost * exchangeRate;
+            if (currency === 'JPY') {
+                costJPY = rawCost;
+                costAUD = rawCost / exchangeRate;
+            }
+
+            const paidStatus = {};
+            MEMBERS.forEach(m => {
+                paidStatus[m] = (m === purchaser);
+            });
+
+            const newExpense = {
+                title,
+                costAUD,
+                costJPY,
+                purchaser,
+                splitAmong: checkedMembers,
+                paid: paidStatus,
+                timestamp: Date.now()
+            };
+
+            try {
+                if (db) {
+                    const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'expenses');
+                    await addDoc(collectionPath, newExpense);
+                } else {
+                    newExpense.firestoreId = 'local_' + Date.now();
+                    expenses.unshift(newExpense);
+                    saveAndRenderLocal();
+                }
+                document.getElementById('expenseForm').reset();
+                document.querySelectorAll('input[name="splitMember"]').forEach(el => el.checked = true);
+            } catch (err) {
+                console.error("Error adding expense:", err);
+            }
+        }
+
+        window.togglePaid = async function(firestoreId, member) {
+            const exp = expenses.find(e => e.firestoreId === firestoreId);
+            if (exp) {
+                exp.paid[member] = !exp.paid[member];
+                try {
+                    if (db && !firestoreId.startsWith('local_')) {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'expenses', firestoreId);
+                        await updateDoc(docRef, { paid: exp.paid });
+                    } else {
+                        saveAndRenderLocal();
+                    }
+                } catch (err) {
+                    console.error("Error updating paid status:", err);
+                }
+            }
+        }
+
+        window.deleteExpense = async function(firestoreId) {
+            try {
+                if (db && !firestoreId.startsWith('local_')) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'expenses', firestoreId);
+                    await deleteDoc(docRef);
+                } else {
+                    expenses = expenses.filter(e => e.firestoreId !== firestoreId);
+                    saveAndRenderLocal();
+                }
+            } catch (err) {
+                console.error("Error deleting expense:", err);
+            }
+        }
+
+        function saveAndRenderLocal() {
+            localStorage.setItem('tabisplit_expenses_v2', JSON.stringify(expenses));
+            renderItems();
+            renderSummary();
+        }
+
+        function renderItems() {
+            const listEl = document.getElementById('itemList');
+            if (expenses.length === 0) {
+                listEl.innerHTML = `<div class="empty-state">No expenses added yet. Add one above!</div>`;
+                return;
+            }
+
+            listEl.innerHTML = expenses.map(exp => {
+                const perPersonAUD = exp.costAUD / exp.splitAmong.length;
+                const perPersonJPY = exp.costJPY / exp.splitAmong.length;
+
+                return `
+                    <div class="expense-item">
+                        <div class="expense-header">
+                            <div>
+                                <div class="expense-title">${escapeHtml(exp.title)}</div>
+                                <div class="expense-meta">Paid by <strong>${exp.purchaser}</strong></div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 6px;">
+                                <div>
+                                    <div class="expense-cost">$${exp.costAUD.toFixed(2)} AUD</div>
+                                    <div class="expense-subcost">¥${Math.round(exp.costJPY).toLocaleString()} JPY</div>
+                                </div>
+                                <button class="delete-btn" onclick="deleteExpense('${exp.firestoreId}')" title="Delete Item">✕</button>
+                            </div>
+                        </div>
+                        <div class="split-ticks">
+                            ${MEMBERS.map(m => {
+                                const isIncluded = exp.splitAmong.includes(m);
+                                if (!isIncluded) return '';
+                                const isPaid = exp.paid[m];
+                                return `
+                                    <label class="split-badge ${isPaid ? 'active' : ''}">
+                                        <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${exp.firestoreId}', '${m}')">
+                                        ${m}: $${perPersonAUD.toFixed(2)} (${isPaid ? 'Paid' : 'Unpaid'})
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSummary() {
+            const summaryGrid = document.getElementById('summaryGrid');
+            const totals = {};
+            MEMBERS.forEach(m => totals[m] = 0);
+
+            expenses.forEach(exp => {
+                const share = exp.costAUD / exp.splitAmong.length;
+                exp.splitAmong.forEach(m => {
+                    totals[m] += share;
+                });
+            });
+
+            summaryGrid.innerHTML = MEMBERS.map(m => `
+                <div class="summary-box">
+                    <div class="summary-name">${m}'s Share</div>
+                    <div class="summary-amount">$${totals[m].toFixed(2)} AUD</div>
+                    <div class="expense-subcost" style="margin-top:3px;">¥${Math.round(totals[m] * exchangeRate).toLocaleString()} JPY</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
